@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Born Today — Inspirational Stories</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0f172a, #020617);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+      overflow-x: hidden;
+    }
+
+    .background-glow {
+      position: fixed;
+      width: 500px;
+      height: 500px;
+      background: rgba(59, 130, 246, 0.15);
+      border-radius: 50%;
+      filter: blur(120px);
+      top: -150px;
+      right: -100px;
+      z-index: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #93c5fd;
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      font-size: clamp(2.8rem, 5vw, 4.5rem);
+      line-height: 1.05;
+      font-weight: 800;
+      margin-bottom: 20px;
+    }
+
+    .highlight {
+      background: linear-gradient(90deg, #60a5fa, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      color: #cbd5e1;
+      font-size: 1.1rem;
+      max-width: 650px;
+      margin: 0 auto 30px;
+      line-height: 1.8;
+    }
+
+    .cta-button {
+      border: none;
+      background: linear-gradient(90deg, #2563eb, #7c3aed);
+      color: white;
+      padding: 16px 28px;
+      border-radius: 16px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 30px rgba(37,99,235,0.35);
+    }
+
+    .cta-button:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 16px 40px rgba(37,99,235,0.45);
+    }
+
+    .story-card {
+      margin-top: 40px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 28px;
+      padding: 40px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+      display: none;
+      animation: fadeIn 0.7s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .profile {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .profile img {
+      width: 140px;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 4px solid rgba(255,255,255,0.1);
+      margin-bottom: 18px;
+    }
+
+    .profile h2 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .profile p {
+      color: #94a3b8;
+    }
+
+    .timeline {
+      position: relative;
+      margin-top: 30px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 12px;
+      top: 0;
+      width: 2px;
+      height: 100%;
+      background: rgba(255,255,255,0.1);
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-left: 50px;
+      margin-bottom: 35px;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: 0;
+      top: 5px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      box-shadow: 0 0 20px rgba(59,130,246,0.5);
+    }
+
+    .timeline-item h3 {
+      font-size: 1.25rem;
+      margin-bottom: 10px;
+      color: #93c5fd;
+    }
+
+    .timeline-item p {
+      line-height: 1.9;
+      color: #d1d5db;
+      font-size: 1rem;
+    }
+
+    .footer-note {
+      margin-top: 30px;
+      text-align: center;
+      color: #64748b;
+      font-size: 0.95rem;
+    }
+
+    .loading {
+      text-align: center;
+      color: #93c5fd;
+      font-size: 1.1rem;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .story-card {
+        padding: 25px;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+      }
+
+      .timeline-item {
+        padding-left: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="background-glow"></div>
+
+  <div class="container">
+
+    <div class="hero">
+      <div class="badge">
+        ✨ Daily Inspirational Biography
+      </div>
+
+      <h1>
+        Born <span class="highlight">Today</span>
+      </h1>
+
+      <p class="subtitle">
+        Discover a legendary personality born on this day and explore their journey through struggle, perseverance, and impact.
+      </p>
+
+      <button class="cta-button" id="generateBtn">
+        Reveal Today's Story
+      </button>
+
+      <div class="loading" id="loading"></div>
+    </div>
+
+    <div class="story-card" id="storyCard">
+
+      <div class="profile">
+        <img id="personImage" src="" alt="Person Image">
+        <h2 id="personName"></h2>
+        <p id="personDesc"></p>
+      </div>
+
+      <div class="timeline" id="storyTimeline"></div>
+
+      <div class="footer-note">
+        Every extraordinary life begins with ordinary moments.
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+
+    const generateBtn = document.getElementById('generateBtn');
+    const loading = document.getElementById('loading');
+    const storyCard = document.getElementById('storyCard');
+    const personImage = document.getElementById('personImage');
+    const personName = document.getElementById('personName');
+    const personDesc = document.getElementById('personDesc');
+    const storyTimeline = document.getElementById('storyTimeline');
+
+    generateBtn.addEventListener('click', generateStory);
+
+    async function generateStory() {
+      loading.innerText = 'Finding an inspiring personality born today...';
+      storyCard.style.display = 'none';
+
+      try {
+
+        const today = new Date();
+        const month = today.getMonth() + 1;
+        const day = today.getDate();
+
+        // Wikimedia API
+        const response = await fetch(
+          `https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/births/${month}/${day}`
+        );
+
+        const data = await response.json();
+
+        const validPeople = data.births.filter(person => person.pages && person.pages.length > 0);
+
+        const randomPerson = validPeople[Math.floor(Math.random() * validPeople.length)];
+
+        const page = randomPerson.pages[0];
+
+        // Wikipedia summary API
+        const summaryResponse = await fetch(
+          `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(page.normalizedtitle)}`
+        );
+
+        const summaryData = await summaryResponse.json();
+
+        renderStory(summaryData);
+
+      } catch (error) {
+        console.error(error);
+        loading.innerText = 'Something went wrong. Please try again.';
+      }
+    }
+
+    function renderStory(data) {
+
+      loading.innerText = '';
+      storyCard.style.display = 'block';
+
+      personName.innerText = data.title || 'Unknown Personality';
+      personDesc.innerText = data.description || 'Legendary personality';
+
+      personImage.src = data.thumbnail?.source ||
+        'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
+
+      const summary = data.extract || 'An inspiring individual whose journey impacted the world.';
+
+      const birthSection = `
+        Every remarkable journey starts with humble beginnings. ${summary}
+      `;
+
+      const struggleSection = `
+        Like all influential people, the road was filled with uncertainty, pressure, failures, and difficult moments. Yet those challenges shaped resilience and character.
+      `;
+
+      const perseveranceSection = `
+        Through persistence, discipline, and belief in a larger purpose, they continued moving forward. Consistency over time transformed obstacles into achievements.
+      `;
+
+      const insightSection = `
+        The life of ${data.title} reminds us that greatness is rarely instant. Meaningful impact comes from perseverance, courage, and the willingness to continue despite setbacks.
+      `;
+
+      storyTimeline.innerHTML = `
+
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <h3>Birth & Early Life</h3>
+          <p>${birthSection}</p>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <h3>Struggles</h3>
+          <p>${struggleSection}</p>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <h3>Perseverance</h3>
+          <p>${perseveranceSection}</p>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <h3>Final Insight</h3>
+          <p>${insightSection}</p>
+        </div>
+
+      `;
+    }
+
+    // Auto load on startup
+    generateStory();
+
+  </script>
+
+</body>
+</html>
