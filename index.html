@@ -101,7 +101,7 @@
       background:#111827;
       color:white;
       font-size:1rem;
-      min-width:220px;
+      min-width:240px;
       outline:none;
       border:1px solid rgba(255,255,255,0.08);
     }
@@ -127,6 +127,7 @@
       margin-top:20px;
       color:#93c5fd;
       text-align:center;
+      min-height:24px;
     }
 
     .story-card{
@@ -245,6 +246,14 @@
         padding-left:42px;
       }
 
+      .controls{
+        flex-direction:column;
+      }
+
+      select,button{
+        width:100%;
+      }
+
     }
 
   </style>
@@ -275,7 +284,6 @@
 
       <select id="categorySelect">
 
-        <option value="all">🌍 All Fields</option>
         <option value="sports">🏆 Sports</option>
         <option value="arts">🎨 Arts & Entertainment</option>
         <option value="politics">🏛 Politics</option>
@@ -360,25 +368,26 @@ async function generateStory(){
 
     const filtered = validPeople.filter(person => {
 
-      const title =
-        person.pages[0].normalizedtitle.toLowerCase();
+      const pageData = person.pages[0];
 
       const desc =
-        (person.pages[0].description || '').toLowerCase();
+        (pageData.description || '').toLowerCase();
 
       if(category === 'sports'){
         return desc.includes('football') ||
                desc.includes('athlete') ||
                desc.includes('cricketer') ||
                desc.includes('basketball') ||
-               desc.includes('player');
+               desc.includes('player') ||
+               desc.includes('tennis');
       }
 
       if(category === 'arts'){
         return desc.includes('actor') ||
                desc.includes('actress') ||
                desc.includes('artist') ||
-               desc.includes('film');
+               desc.includes('film') ||
+               desc.includes('director');
       }
 
       if(category === 'politics'){
@@ -390,7 +399,8 @@ async function generateStory(){
       if(category === 'science'){
         return desc.includes('scientist') ||
                desc.includes('physicist') ||
-               desc.includes('inventor');
+               desc.includes('inventor') ||
+               desc.includes('mathematician');
       }
 
       if(category === 'music'){
@@ -400,15 +410,20 @@ async function generateStory(){
                desc.includes('drummer');
       }
 
-      return true;
+      return false;
 
     });
 
-    const finalList =
-      filtered.length > 0 ? filtered : validPeople;
+    if(filtered.length === 0){
+
+      loading.innerText =
+        'No personality found in this category for today. Try another field.';
+
+      return;
+    }
 
     const person =
-      finalList[Math.floor(Math.random() * finalList.length)];
+      filtered[Math.floor(Math.random() * filtered.length)];
 
     const page = person.pages[0];
 
@@ -508,33 +523,40 @@ function generateLowestPoint(data){
 
   if(desc.includes('athlete') ||
      desc.includes('football') ||
-     desc.includes('cricketer')){
+     desc.includes('cricketer') ||
+     desc.includes('player')){
 
     return `
-    Behind achievements were exhausting years of training, public pressure, injuries, setbacks, and moments where failure seemed unavoidable.
+    Behind achievements were exhausting years of training, pressure, setbacks, and moments where failure seemed unavoidable. 
+    Injuries, criticism, and competition tested both physical and mental resilience.
     `;
 
   }
 
   if(desc.includes('musician') ||
      desc.includes('singer') ||
-     desc.includes('drummer')){
+     desc.includes('drummer') ||
+     desc.includes('composer')){
 
     return `
-    The creative journey was filled with uncertainty, rejection, financial instability, and the constant struggle to stand out in a competitive industry.
+    The creative journey was filled with uncertainty, rejection, financial instability, and the struggle to stand out in an intensely competitive industry.
     `;
 
   }
 
-  if(desc.includes('politician')){
+  if(desc.includes('politician') ||
+     desc.includes('president')){
 
     return `
-    Leadership brought criticism, controversy, and immense pressure. Public life demanded resilience under constant scrutiny.
+    Leadership brought criticism, controversy, and immense public pressure. 
+    Difficult decisions and constant scrutiny defined the hardest phases of the journey.
     `;
 
   }
 
-  if(desc.includes('scientist')){
+  if(desc.includes('scientist') ||
+     desc.includes('physicist') ||
+     desc.includes('inventor')){
 
     return `
     Progress required years of failed experiments, doubt, and intellectual struggle before breakthroughs finally emerged.
@@ -553,8 +575,8 @@ function generatePerseverance(data){
   const name = data.title;
 
   return `
-  Despite setbacks, ${name} continued forward with discipline, resilience, and long-term belief in a larger purpose. 
-  Persistence transformed obstacles into momentum.
+  Despite setbacks, ${name} continued forward with resilience, consistency, and long-term belief in a larger purpose. 
+  Persistence transformed obstacles into momentum and growth.
   `;
 
 }
@@ -576,13 +598,10 @@ function generateInsight(data){
 
   return `
   The life of ${name} reminds us that greatness is rarely immediate. 
-  Success grows quietly through consistency, courage, and the willingness to continue despite uncertainty.
+  Success grows quietly through discipline, courage, resilience, and the willingness to continue despite uncertainty.
   `;
 
 }
-
-// auto load
-generateStory();
 
 </script>
 
