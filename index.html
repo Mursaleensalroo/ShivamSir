@@ -1,329 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Born Today — Legendary Journeys</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <style>
-
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-    }
-
-    body{
-      font-family:'Inter',sans-serif;
-      background:linear-gradient(135deg,#020617,#0f172a);
-      color:white;
-      min-height:100vh;
-      overflow-x:hidden;
-      padding:30px;
-    }
-
-    .bg-glow{
-      position:fixed;
-      width:500px;
-      height:500px;
-      background:rgba(59,130,246,0.15);
-      border-radius:50%;
-      filter:blur(120px);
-      top:-120px;
-      right:-100px;
-      z-index:0;
-    }
-
-    .container{
-      max-width:1000px;
-      margin:auto;
-      position:relative;
-      z-index:2;
-    }
-
-    .hero{
-      text-align:center;
-      margin-top:40px;
-      margin-bottom:40px;
-    }
-
-    .badge{
-      display:inline-block;
-      padding:10px 18px;
-      border-radius:999px;
-      background:rgba(255,255,255,0.06);
-      border:1px solid rgba(255,255,255,0.08);
-      color:#93c5fd;
-      margin-bottom:25px;
-      font-size:0.9rem;
-      backdrop-filter:blur(10px);
-    }
-
-    h1{
-      font-size:clamp(3rem,6vw,5rem);
-      line-height:1.05;
-      font-weight:800;
-      margin-bottom:20px;
-    }
-
-    .gradient{
-      background:linear-gradient(90deg,#60a5fa,#8b5cf6);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-    }
-
-    .subtitle{
-      max-width:720px;
-      margin:auto;
-      line-height:1.8;
-      color:#cbd5e1;
-      font-size:1.1rem;
-      margin-bottom:35px;
-    }
-
-    .controls{
-      display:flex;
-      justify-content:center;
-      gap:15px;
-      flex-wrap:wrap;
-      margin-bottom:25px;
-    }
-
-    select{
-      padding:15px 18px;
-      border-radius:16px;
-      border:none;
-      background:#111827;
-      color:white;
-      font-size:1rem;
-      min-width:240px;
-      outline:none;
-      border:1px solid rgba(255,255,255,0.08);
-    }
-
-    button{
-      border:none;
-      padding:15px 28px;
-      border-radius:18px;
-      background:linear-gradient(90deg,#2563eb,#7c3aed);
-      color:white;
-      font-size:1rem;
-      font-weight:600;
-      cursor:pointer;
-      transition:0.3s ease;
-      box-shadow:0 15px 40px rgba(37,99,235,0.3);
-    }
-
-    button:hover{
-      transform:translateY(-3px);
-    }
-
-    .loading{
-      margin-top:20px;
-      color:#93c5fd;
-      text-align:center;
-      min-height:24px;
-    }
-
-    .story-card{
-      display:none;
-      margin-top:40px;
-      background:rgba(15,23,42,0.75);
-      border:1px solid rgba(255,255,255,0.08);
-      border-radius:30px;
-      padding:40px;
-      backdrop-filter:blur(20px);
-      box-shadow:0 25px 60px rgba(0,0,0,0.45);
-      animation:fadeIn 0.7s ease;
-    }
-
-    @keyframes fadeIn{
-      from{
-        opacity:0;
-        transform:translateY(20px);
-      }
-      to{
-        opacity:1;
-        transform:translateY(0);
-      }
-    }
-
-    .profile{
-      text-align:center;
-      margin-bottom:40px;
-    }
-
-    .profile img{
-      width:160px;
-      height:160px;
-      border-radius:50%;
-      object-fit:cover;
-      border:4px solid rgba(255,255,255,0.1);
-      margin-bottom:20px;
-    }
-
-    .profile h2{
-      font-size:3rem;
-      margin-bottom:10px;
-    }
-
-    .profile p{
-      color:#94a3b8;
-      font-size:1.1rem;
-    }
-
-    .timeline{
-      position:relative;
-      margin-top:30px;
-    }
-
-    .timeline::before{
-      content:'';
-      position:absolute;
-      left:12px;
-      top:0;
-      width:2px;
-      height:100%;
-      background:rgba(255,255,255,0.08);
-    }
-
-    .timeline-item{
-      position:relative;
-      padding-left:55px;
-      margin-bottom:40px;
-    }
-
-    .dot{
-      position:absolute;
-      left:0;
-      top:5px;
-      width:24px;
-      height:24px;
-      border-radius:50%;
-      background:linear-gradient(135deg,#3b82f6,#8b5cf6);
-      box-shadow:0 0 20px rgba(59,130,246,0.5);
-    }
-
-    .timeline-item h3{
-      color:#93c5fd;
-      font-size:1.5rem;
-      margin-bottom:14px;
-    }
-
-    .timeline-item p{
-      color:#d1d5db;
-      line-height:1.9;
-      font-size:1.08rem;
-    }
-
-    .footer{
-      text-align:center;
-      margin-top:30px;
-      color:#64748b;
-      font-size:0.95rem;
-    }
-
-    @media(max-width:768px){
-
-      body{
-        padding:18px;
-      }
-
-      .story-card{
-        padding:24px;
-      }
-
-      .profile h2{
-        font-size:2.1rem;
-      }
-
-      .timeline-item{
-        padding-left:42px;
-      }
-
-      .controls{
-        flex-direction:column;
-      }
-
-      select,button{
-        width:100%;
-      }
-
-    }
-
-  </style>
-</head>
-
-<body>
-
-<div class="bg-glow"></div>
-
-<div class="container">
-
-  <div class="hero">
-
-    <div class="badge">
-      ✨ Legendary Lives • Daily Inspiration
-    </div>
-
-    <h1>
-      Born <span class="gradient">Today</span>
-    </h1>
-
-    <p class="subtitle">
-      Discover influential personalities born on this day. 
-      Explore their lowest moments, perseverance, breakthroughs, and lasting legacy.
-    </p>
-
-    <div class="controls">
-
-      <select id="categorySelect">
-
-        <option value="sports">🏆 Sports</option>
-        <option value="arts">🎨 Arts & Entertainment</option>
-        <option value="politics">🏛 Politics</option>
-        <option value="science">🧪 Science</option>
-        <option value="music">🎵 Music</option>
-
-      </select>
-
-      <button id="generateBtn">
-        Reveal Today's Legend
-      </button>
-
-    </div>
-
-    <div class="loading" id="loading"></div>
-
-  </div>
-
-  <div class="story-card" id="storyCard">
-
-    <div class="profile">
-
-      <img id="personImage" src="" alt="">
-
-      <h2 id="personName"></h2>
-
-      <p id="personDesc"></p>
-
-    </div>
-
-    <div class="timeline" id="timeline"></div>
-
-    <div class="footer">
-      Every legendary life contains struggle, uncertainty, and transformation.
-    </div>
-
-  </div>
-
-</div>
-
 <script>
 
 const generateBtn = document.getElementById('generateBtn');
@@ -341,13 +15,13 @@ const timeline = document.getElementById('timeline');
 
 generateBtn.addEventListener('click', generateStory);
 
-async function generateStory(){
+async function generateStory() {
 
-  loading.innerText = 'Finding today\\'s legendary personality...';
+  loading.innerText = "Finding today's legendary personality...";
 
   storyCard.style.display = 'none';
 
-  try{
+  try {
 
     const today = new Date();
 
@@ -360,75 +34,78 @@ async function generateStory(){
 
     const data = await response.json();
 
-    const validPeople = data.births.filter(
-      p => p.pages && p.pages.length > 0
+    if (!data.births || data.births.length === 0) {
+      loading.innerText = "No personalities found today.";
+      return;
+    }
+
+    const validPeople = data.births.filter(person =>
+      person.pages &&
+      person.pages.length > 0 &&
+      person.pages[0].normalizedtitle
     );
 
     const category = categorySelect.value;
 
-    const filtered = validPeople.filter(person => {
-
-      const pageData = person.pages[0];
+    let filtered = validPeople.filter(person => {
 
       const desc =
-        (pageData.description || '').toLowerCase();
+        (person.pages[0].description || '').toLowerCase();
 
-      if(category === 'sports'){
-        return desc.includes('football') ||
-               desc.includes('athlete') ||
-               desc.includes('cricketer') ||
-               desc.includes('basketball') ||
-               desc.includes('player') ||
-               desc.includes('tennis');
+      switch(category){
+
+        case 'sports':
+          return desc.includes('athlete') ||
+                 desc.includes('football') ||
+                 desc.includes('cricketer') ||
+                 desc.includes('player') ||
+                 desc.includes('tennis') ||
+                 desc.includes('basketball');
+
+        case 'arts':
+          return desc.includes('actor') ||
+                 desc.includes('actress') ||
+                 desc.includes('artist') ||
+                 desc.includes('film') ||
+                 desc.includes('director');
+
+        case 'politics':
+          return desc.includes('politician') ||
+                 desc.includes('president') ||
+                 desc.includes('prime minister');
+
+        case 'science':
+          return desc.includes('scientist') ||
+                 desc.includes('physicist') ||
+                 desc.includes('inventor') ||
+                 desc.includes('mathematician');
+
+        case 'music':
+          return desc.includes('musician') ||
+                 desc.includes('singer') ||
+                 desc.includes('composer') ||
+                 desc.includes('drummer');
+
+        default:
+          return true;
+
       }
-
-      if(category === 'arts'){
-        return desc.includes('actor') ||
-               desc.includes('actress') ||
-               desc.includes('artist') ||
-               desc.includes('film') ||
-               desc.includes('director');
-      }
-
-      if(category === 'politics'){
-        return desc.includes('politician') ||
-               desc.includes('president') ||
-               desc.includes('prime minister');
-      }
-
-      if(category === 'science'){
-        return desc.includes('scientist') ||
-               desc.includes('physicist') ||
-               desc.includes('inventor') ||
-               desc.includes('mathematician');
-      }
-
-      if(category === 'music'){
-        return desc.includes('musician') ||
-               desc.includes('singer') ||
-               desc.includes('composer') ||
-               desc.includes('drummer');
-      }
-
-      return false;
 
     });
 
+    // fallback if no matches
     if(filtered.length === 0){
-
-      loading.innerText =
-        'No personality found in this category for today. Try another field.';
-
-      return;
+      filtered = validPeople;
     }
 
-    const person =
+    const randomPerson =
       filtered[Math.floor(Math.random() * filtered.length)];
 
-    const page = person.pages[0];
+    const title =
+      randomPerson.pages[0].normalizedtitle;
 
     const summaryResponse = await fetch(
-      `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(page.normalizedtitle)}`
+      `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`
     );
 
     const summaryData = await summaryResponse.json();
@@ -442,7 +119,7 @@ async function generateStory(){
     console.error(error);
 
     loading.innerText =
-      'Something went wrong. Please try again.';
+      'Something went wrong. Please refresh and try again.';
 
   }
 
@@ -458,7 +135,7 @@ function renderStory(data){
     data.title || 'Unknown Personality';
 
   personDesc.innerText =
-    data.description || 'Legendary personality';
+    data.description || 'Legendary Personality';
 
   personImage.src =
     data.thumbnail?.source ||
@@ -466,19 +143,7 @@ function renderStory(data){
 
   const summary =
     data.extract ||
-    'An extraordinary individual whose life impacted millions.';
-
-  const lowestPoint =
-    generateLowestPoint(data);
-
-  const perseverance =
-    generatePerseverance(data);
-
-  const highestPoint =
-    generateHighestPoint(data);
-
-  const insight =
-    generateInsight(data);
+    'An extraordinary individual whose journey inspired millions.';
 
   timeline.innerHTML = `
 
@@ -491,25 +156,25 @@ function renderStory(data){
     <div class="timeline-item">
       <div class="dot"></div>
       <h3>Lowest Point</h3>
-      <p>${lowestPoint}</p>
+      <p>${generateLowestPoint(data)}</p>
     </div>
 
     <div class="timeline-item">
       <div class="dot"></div>
       <h3>Perseverance</h3>
-      <p>${perseverance}</p>
+      <p>${generatePerseverance(data)}</p>
     </div>
 
     <div class="timeline-item">
       <div class="dot"></div>
       <h3>Highest Point</h3>
-      <p>${highestPoint}</p>
+      <p>${generateHighestPoint(data)}</p>
     </div>
 
     <div class="timeline-item">
       <div class="dot"></div>
       <h3>Final Insight</h3>
-      <p>${insight}</p>
+      <p>${generateInsight(data)}</p>
     </div>
 
   `;
@@ -523,87 +188,70 @@ function generateLowestPoint(data){
 
   if(desc.includes('athlete') ||
      desc.includes('football') ||
-     desc.includes('cricketer') ||
      desc.includes('player')){
 
     return `
-    Behind achievements were exhausting years of training, pressure, setbacks, and moments where failure seemed unavoidable. 
-    Injuries, criticism, and competition tested both physical and mental resilience.
+    The path to greatness involved pressure, setbacks, competition, and moments where success seemed far away. 
+    Physical and mental resilience became essential.
     `;
 
   }
 
   if(desc.includes('musician') ||
      desc.includes('singer') ||
-     desc.includes('drummer') ||
-     desc.includes('composer')){
+     desc.includes('drummer')){
 
     return `
-    The creative journey was filled with uncertainty, rejection, financial instability, and the struggle to stand out in an intensely competitive industry.
+    Creative careers demanded surviving rejection, uncertainty, and years without recognition while continuing to believe in the craft.
     `;
 
   }
 
-  if(desc.includes('politician') ||
-     desc.includes('president')){
+  if(desc.includes('politician')){
 
     return `
-    Leadership brought criticism, controversy, and immense public pressure. 
-    Difficult decisions and constant scrutiny defined the hardest phases of the journey.
+    Public life brought criticism, scrutiny, and difficult decisions under constant pressure.
     `;
 
   }
 
-  if(desc.includes('scientist') ||
-     desc.includes('physicist') ||
-     desc.includes('inventor')){
+  if(desc.includes('scientist')){
 
     return `
-    Progress required years of failed experiments, doubt, and intellectual struggle before breakthroughs finally emerged.
+    Discovery required years of failed experiments, doubt, and intellectual struggle before meaningful breakthroughs emerged.
     `;
 
   }
 
   return `
-  Every transformative life experiences uncertainty, failure, and difficult moments before success becomes visible.
+  Every extraordinary life experiences uncertainty, setbacks, and difficult phases before transformation occurs.
   `;
 
 }
 
 function generatePerseverance(data){
 
-  const name = data.title;
-
   return `
-  Despite setbacks, ${name} continued forward with resilience, consistency, and long-term belief in a larger purpose. 
-  Persistence transformed obstacles into momentum and growth.
+  Despite setbacks, ${data.title} continued moving forward with resilience, consistency, and long-term belief in a greater purpose.
   `;
 
 }
 
 function generateHighestPoint(data){
 
-  const name = data.title;
-
   return `
-  Over time, ${name} achieved recognition, influence, and lasting impact. 
-  Their work inspired people across generations and established a legacy remembered far beyond their own era.
+  Over time, ${data.title} achieved influence, recognition, and a legacy that inspired people across generations.
   `;
 
 }
 
 function generateInsight(data){
 
-  const name = data.title;
-
   return `
-  The life of ${name} reminds us that greatness is rarely immediate. 
-  Success grows quietly through discipline, courage, resilience, and the willingness to continue despite uncertainty.
+  The story of ${data.title} reminds us that greatness is rarely instant. 
+  Meaningful success grows through courage, discipline, and persistence over time.
   `;
 
 }
 
 </script>
-
-</body>
-</html>
