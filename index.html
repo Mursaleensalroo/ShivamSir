@@ -1,257 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Born Today</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Inter',sans-serif;
+background:linear-gradient(135deg,#020617,#0f172a);
+color:white;
+min-height:100vh;
+padding:30px;
+overflow-x:hidden;
+}
+
+.bg{
+position:fixed;
+width:500px;
+height:500px;
+border-radius:50%;
+background:rgba(59,130,246,0.15);
+filter:blur(120px);
+top:-150px;
+right:-100px;
+z-index:0;
+}
+
+.container{
+max-width:1000px;
+margin:auto;
+position:relative;
+z-index:2;
+}
+
+.hero{
+text-align:center;
+margin-top:40px;
+}
+
+.badge{
+display:inline-block;
+padding:10px 18px;
+border-radius:999px;
+background:rgba(255,255,255,0.06);
+border:1px solid rgba(255,255,255,0.08);
+color:#93c5fd;
+margin-bottom:25px;
+}
+
+h1{
+font-size:clamp(3rem,7vw,5.5rem);
+font-weight:800;
+margin-bottom:20px;
+}
+
+.gradient{
+background:linear-gradient(90deg,#60a5fa,#8b5cf6);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.subtitle{
+max-width:720px;
+margin:auto;
+line-height:1.8;
+color:#cbd5e1;
+font-size:1.1rem;
+margin-bottom:35px;
+}
+
+.controls{
+display:flex;
+justify-content:center;
+gap:15px;
+flex-wrap:wrap;
+margin-bottom:20px;
+}
+
+select{
+padding:15px 18px;
+border-radius:16px;
+background:#111827;
+color:white;
+border:1px solid rgba(255,255,255,0.08);
+font-size:1rem;
+min-width:240px;
+outline:none;
+}
+
+button{
+border:none;
+padding:15px 28px;
+border-radius:18px;
+background:linear-gradient(90deg,#2563eb,#7c3aed);
+color:white;
+font-size:1rem;
+font-weight:600;
+cursor:pointer;
+transition:0.3s;
+box-shadow:0 15px 40px rgba(37,99,235,0.3);
+}
+
+button:hover{
+transform:translateY(-3px);
+}
+
+.loading{
+margin-top:20px;
+color:#93c5fd;
+min-height:24px;
+}
+
+.card{
+display:none;
+margin-top:40px;
+background:rgba(15,23,42,0.75);
+border:1px solid rgba(255,255,255,0.08);
+border-radius:30px;
+padding:40px;
+backdrop-filter:blur(20px);
+box-shadow:0 25px 60px rgba(0,0,0,0.45);
+}
+
+.profile{
+text-align:center;
+margin-bottom:40px;
+}
+
+.profile img{
+width:160px;
+height:160px;
+border-radius:50%;
+object-fit:cover;
+margin-bottom:20px;
+border:4px solid rgba(255,255,255,0.1);
+}
+
+.profile h2{
+font-size:3rem;
+margin-bottom:10px;
+}
+
+.profile p{
+color:#94a3b8;
+}
+
+.timeline{
+position:relative;
+margin-top:30px;
+}
+
+.timeline::before{
+content:'';
+position:absolute;
+left:12px;
+top:0;
+width:2px;
+height:100%;
+background:rgba(255,255,255,0.08);
+}
+
+.item{
+position:relative;
+padding-left:55px;
+margin-bottom:40px;
+}
+
+.dot{
+position:absolute;
+left:0;
+top:5px;
+width:24px;
+height:24px;
+border-radius:50%;
+background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+box-shadow:0 0 20px rgba(59,130,246,0.5);
+}
+
+.item h3{
+font-size:1.5rem;
+margin-bottom:14px;
+color:#93c5fd;
+}
+
+.item p{
+line-height:1.9;
+color:#d1d5db;
+font-size:1.08rem;
+}
+
+.footer{
+margin-top:30px;
+text-align:center;
+color:#64748b;
+}
+
+@media(max-width:768px){
+
+body{
+padding:18px;
+}
+
+.controls{
+flex-direction:column;
+}
+
+select,button{
+width:100%;
+}
+
+.profile h2{
+font-size:2.2rem;
+}
+
+.card{
+padding:24px;
+}
+
+.item{
+padding-left:42px;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="bg"></div>
+
+<div class="container">
+
+<div class="hero">
+
+<div class="badge">
+✨ Legendary Lives • Daily Inspiration
+</div>
+
+<h1>
+Born <span class="gradient">Today</span>
+</h1>
+
+<p class="subtitle">
+Discover influential personalities born on this day and explore their struggles, perseverance, and lasting legacy.
+</p>
+
+<div class="controls">
+
+<select id="category">
+
+<option value="sports">🏆 Sports</option>
+<option value="arts">🎨 Arts</option>
+<option value="politics">🏛 Politics</option>
+<option value="science">🧪 Science</option>
+<option value="music">🎵 Music</option>
+
+</select>
+
+<button id="btn">
+Reveal Today's Legend
+</button>
+
+</div>
+
+<div class="loading" id="loading"></div>
+
+</div>
+
+<div class="card" id="card">
+
+<div class="profile">
+
+<img id="image">
+
+<h2 id="name"></h2>
+
+<p id="desc"></p>
+
+</div>
+
+<div class="timeline" id="timeline"></div>
+
+<div class="footer">
+Every legendary life contains struggle and transformation.
+</div>
+
+</div>
+
+</div>
+
 <script>
 
-const generateBtn = document.getElementById('generateBtn');
-const categorySelect = document.getElementById('categorySelect');
+const btn = document.getElementById('btn');
+
+const category = document.getElementById('category');
 
 const loading = document.getElementById('loading');
 
-const storyCard = document.getElementById('storyCard');
+const card = document.getElementById('card');
 
-const personImage = document.getElementById('personImage');
-const personName = document.getElementById('personName');
-const personDesc = document.getElementById('personDesc');
+const image = document.getElementById('image');
+
+const nameEl = document.getElementById('name');
+
+const descEl = document.getElementById('desc');
 
 const timeline = document.getElementById('timeline');
 
-generateBtn.addEventListener('click', generateStory);
+btn.addEventListener('click', generateStory);
 
-async function generateStory() {
+async function generateStory(){
 
-  loading.innerText = "Finding today's legendary personality...";
+loading.innerText = "Finding today's legend...";
 
-  storyCard.style.display = 'none';
+card.style.display = "none";
 
-  try {
+try{
 
-    const today = new Date();
+const today = new Date();
 
-    const month = today.getMonth() + 1;
-    const day = today.getDate();
+const month = today.getMonth() + 1;
 
-    const response = await fetch(
-      `https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/births/${month}/${day}`
-    );
+const day = today.getDate();
 
-    const data = await response.json();
+const response = await fetch(
+`https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/births/${month}/${day}`
+);
 
-    if (!data.births || data.births.length === 0) {
-      loading.innerText = "No personalities found today.";
-      return;
-    }
+const data = await response.json();
 
-    const validPeople = data.births.filter(person =>
-      person.pages &&
-      person.pages.length > 0 &&
-      person.pages[0].normalizedtitle
-    );
+const births = data.births || [];
 
-    const category = categorySelect.value;
+const valid = births.filter(p =>
+p.pages &&
+p.pages.length > 0 &&
+p.pages[0].normalizedtitle
+);
 
-    let filtered = validPeople.filter(person => {
+if(valid.length === 0){
 
-      const desc =
-        (person.pages[0].description || '').toLowerCase();
+loading.innerText = "No personalities found.";
 
-      switch(category){
-
-        case 'sports':
-          return desc.includes('athlete') ||
-                 desc.includes('football') ||
-                 desc.includes('cricketer') ||
-                 desc.includes('player') ||
-                 desc.includes('tennis') ||
-                 desc.includes('basketball');
-
-        case 'arts':
-          return desc.includes('actor') ||
-                 desc.includes('actress') ||
-                 desc.includes('artist') ||
-                 desc.includes('film') ||
-                 desc.includes('director');
-
-        case 'politics':
-          return desc.includes('politician') ||
-                 desc.includes('president') ||
-                 desc.includes('prime minister');
-
-        case 'science':
-          return desc.includes('scientist') ||
-                 desc.includes('physicist') ||
-                 desc.includes('inventor') ||
-                 desc.includes('mathematician');
-
-        case 'music':
-          return desc.includes('musician') ||
-                 desc.includes('singer') ||
-                 desc.includes('composer') ||
-                 desc.includes('drummer');
-
-        default:
-          return true;
-
-      }
-
-    });
-
-    // fallback if no matches
-    if(filtered.length === 0){
-      filtered = validPeople;
-    }
-
-    const randomPerson =
-      filtered[Math.floor(Math.random() * filtered.length)];
-
-    const title =
-      randomPerson.pages[0].normalizedtitle;
-
-    const summaryResponse = await fetch(
-      `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`
-    );
-
-    const summaryData = await summaryResponse.json();
-
-    renderStory(summaryData);
-
-  }
-
-  catch(error){
-
-    console.error(error);
-
-    loading.innerText =
-      'Something went wrong. Please refresh and try again.';
-
-  }
+return;
 
 }
 
-function renderStory(data){
+const selected = category.value;
 
-  loading.innerText = '';
+let filtered = valid.filter(person => {
 
-  storyCard.style.display = 'block';
+const desc =
+(person.pages[0].description || '').toLowerCase();
 
-  personName.innerText =
-    data.title || 'Unknown Personality';
+if(selected === 'sports'){
+return desc.includes('athlete') ||
+desc.includes('football') ||
+desc.includes('player') ||
+desc.includes('cricketer') ||
+desc.includes('tennis');
+}
 
-  personDesc.innerText =
-    data.description || 'Legendary Personality';
+if(selected === 'arts'){
+return desc.includes('actor') ||
+desc.includes('artist') ||
+desc.includes('film') ||
+desc.includes('director');
+}
 
-  personImage.src =
-    data.thumbnail?.source ||
-    'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
+if(selected === 'politics'){
+return desc.includes('politician') ||
+desc.includes('president') ||
+desc.includes('prime minister');
+}
 
-  const summary =
-    data.extract ||
-    'An extraordinary individual whose journey inspired millions.';
+if(selected === 'science'){
+return desc.includes('scientist') ||
+desc.includes('physicist') ||
+desc.includes('inventor');
+}
 
-  timeline.innerHTML = `
+if(selected === 'music'){
+return desc.includes('musician') ||
+desc.includes('singer') ||
+desc.includes('composer') ||
+desc.includes('drummer');
+}
 
-    <div class="timeline-item">
-      <div class="dot"></div>
-      <h3>Early Journey</h3>
-      <p>${summary}</p>
-    </div>
+return true;
 
-    <div class="timeline-item">
-      <div class="dot"></div>
-      <h3>Lowest Point</h3>
-      <p>${generateLowestPoint(data)}</p>
-    </div>
+});
 
-    <div class="timeline-item">
-      <div class="dot"></div>
-      <h3>Perseverance</h3>
-      <p>${generatePerseverance(data)}</p>
-    </div>
+if(filtered.length === 0){
+filtered = valid;
+}
 
-    <div class="timeline-item">
-      <div class="dot"></div>
-      <h3>Highest Point</h3>
-      <p>${generateHighestPoint(data)}</p>
-    </div>
+const random =
+filtered[Math.floor(Math.random()*filtered.length)];
 
-    <div class="timeline-item">
-      <div class="dot"></div>
-      <h3>Final Insight</h3>
-      <p>${generateInsight(data)}</p>
-    </div>
+const title =
+random.pages[0].normalizedtitle;
 
-  `;
+const wikiResponse = await fetch(
+`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`
+);
+
+const person = await wikiResponse.json();
+
+render(person);
 
 }
 
-function generateLowestPoint(data){
+catch(error){
 
-  const desc =
-    (data.description || '').toLowerCase();
+console.error(error);
 
-  if(desc.includes('athlete') ||
-     desc.includes('football') ||
-     desc.includes('player')){
-
-    return `
-    The path to greatness involved pressure, setbacks, competition, and moments where success seemed far away. 
-    Physical and mental resilience became essential.
-    `;
-
-  }
-
-  if(desc.includes('musician') ||
-     desc.includes('singer') ||
-     desc.includes('drummer')){
-
-    return `
-    Creative careers demanded surviving rejection, uncertainty, and years without recognition while continuing to believe in the craft.
-    `;
-
-  }
-
-  if(desc.includes('politician')){
-
-    return `
-    Public life brought criticism, scrutiny, and difficult decisions under constant pressure.
-    `;
-
-  }
-
-  if(desc.includes('scientist')){
-
-    return `
-    Discovery required years of failed experiments, doubt, and intellectual struggle before meaningful breakthroughs emerged.
-    `;
-
-  }
-
-  return `
-  Every extraordinary life experiences uncertainty, setbacks, and difficult phases before transformation occurs.
-  `;
+loading.innerText =
+"Something went wrong. Try again.";
 
 }
 
-function generatePerseverance(data){
+}
 
-  return `
-  Despite setbacks, ${data.title} continued moving forward with resilience, consistency, and long-term belief in a greater purpose.
-  `;
+function render(person){
+
+loading.innerText = "";
+
+card.style.display = "block";
+
+nameEl.innerText =
+person.title || "Unknown";
+
+descEl.innerText =
+person.description || "Legendary personality";
+
+image.src =
+person.thumbnail?.source ||
+'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
+
+const summary =
+person.extract ||
+"An inspiring personality.";
+
+timeline.innerHTML = `
+
+<div class="item">
+<div class="dot"></div>
+<h3>Early Journey</h3>
+<p>${summary}</p>
+</div>
+
+<div class="item">
+<div class="dot"></div>
+<h3>Lowest Point</h3>
+<p>${lowest(person)}</p>
+</div>
+
+<div class="item">
+<div class="dot"></div>
+<h3>Perseverance</h3>
+<p>${perseverance(person)}</p>
+</div>
+
+<div class="item">
+<div class="dot"></div>
+<h3>Highest Point</h3>
+<p>${highest(person)}</p>
+</div>
+
+<div class="item">
+<div class="dot"></div>
+<h3>Final Insight</h3>
+<p>${insight(person)}</p>
+</div>
+
+`;
 
 }
 
-function generateHighestPoint(data){
+function lowest(person){
 
-  return `
-  Over time, ${data.title} achieved influence, recognition, and a legacy that inspired people across generations.
-  `;
+return `
+Before recognition came uncertainty, setbacks, criticism, and difficult moments where success seemed far away.
+`;
 
 }
 
-function generateInsight(data){
+function perseverance(person){
 
-  return `
-  The story of ${data.title} reminds us that greatness is rarely instant. 
-  Meaningful success grows through courage, discipline, and persistence over time.
-  `;
+return `
+Despite setbacks, ${person.title} continued moving forward with consistency, resilience, and belief in a greater purpose.
+`;
+
+}
+
+function highest(person){
+
+return `
+Over time, ${person.title} achieved recognition, influence, and a legacy that inspired people across generations.
+`;
+
+}
+
+function insight(person){
+
+return `
+The life of ${person.title} reminds us that greatness is built slowly through courage, persistence, and discipline.
+`;
 
 }
 
 </script>
+
+</body>
+</html>
