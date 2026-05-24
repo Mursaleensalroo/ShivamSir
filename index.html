@@ -21,24 +21,19 @@
       --accent: #7a1a13;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      background: var(--paper);
+      background:
+        radial-gradient(ellipse at top, rgba(122,26,19,0.04), transparent 60%),
+        var(--paper);
       color: var(--ink);
       font-family: 'Crimson Pro', serif;
       padding: 40px 24px 80px;
       min-height: 100vh;
     }
 
-    .sheet {
-      max-width: 1100px;
-      margin: 0 auto;
-    }
+    .sheet { max-width: 1100px; margin: 0 auto; }
 
     .masthead {
       border-top: 6px double var(--rule);
@@ -62,9 +57,7 @@
       text-transform: none;
     }
 
-    .masthead .right {
-      text-align: right;
-    }
+    .masthead .right { text-align: right; }
 
     .header {
       text-align: center;
@@ -117,8 +110,8 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 20px;
-      align-items: center;
+      gap: 28px;
+      align-items: flex-end;
     }
 
     label {
@@ -139,6 +132,7 @@
       font-style: italic;
       color: var(--ink);
       cursor: pointer;
+      margin-top: 6px;
     }
 
     select:focus {
@@ -159,9 +153,8 @@
       transition: 0.2s ease;
     }
 
-    button:hover {
-      background: var(--accent);
-    }
+    button:hover:not(:disabled) { background: var(--accent); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .loading {
       text-align: center;
@@ -169,54 +162,45 @@
       font-style: italic;
       color: var(--ink-faded);
       min-height: 30px;
+      font-size: 18px;
+    }
+
+    .loading.active::after {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      margin-left: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 1.2s ease-in-out infinite;
+      vertical-align: middle;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.2; transform: scale(0.8); }
+      50%      { opacity: 1;   transform: scale(1.2); }
     }
 
     .entry {
       display: none;
       padding-top: 60px;
-      animation: fadeIn 0.5s ease;
+      animation: fadeIn 0.6s ease;
     }
 
-    .entry.show {
-      display: block;
-    }
+    .entry.show { display: block; }
 
     @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(12px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
     .entry-head {
-      display: grid;
-      grid-template-columns: 240px 1fr;
-      gap: 50px;
+      gap: 28px;
       margin-bottom: 50px;
       border-bottom: 1px solid var(--rule);
       padding-bottom: 40px;
-    }
-
-    .portrait img {
-      width: 100%;
-      aspect-ratio: 3/4;
-      object-fit: cover;
-      border: 1px solid var(--ink);
-      filter: grayscale(1) contrast(1.05);
-    }
-
-    .caption {
-      margin-top: 10px;
       text-align: center;
-      font-size: 10px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--ink-faded);
-      font-family: 'JetBrains Mono', monospace;
     }
 
     .index {
@@ -230,9 +214,10 @@
 
     .entry-title h2 {
       font-family: 'Playfair Display', serif;
-      font-size: clamp(42px, 6vw, 74px);
+      font-size: clamp(48px, 7vw, 88px);
       line-height: 0.95;
       margin-bottom: 16px;
+      letter-spacing: -0.02em;
     }
 
     .descriptor {
@@ -240,13 +225,26 @@
       font-style: italic;
       color: var(--ink-soft);
       line-height: 1.5;
+      max-width: 720px;
+      margin: 0 auto;
     }
+
+    .lifespan {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--ink-faded);
+      margin-top: 20px;
+    }
+
+    .lifespan span { color: var(--accent); }
 
     .chapter {
       display: grid;
       grid-template-columns: 180px 1fr;
       gap: 40px;
-      padding: 30px 0;
+      padding: 36px 0;
       border-bottom: 1px solid rgba(20,17,13,0.12);
     }
 
@@ -265,18 +263,43 @@
       font-style: italic;
       color: var(--accent);
       margin-bottom: 10px;
+      line-height: 1;
     }
 
     .chapter-body h3 {
       font-family: 'Playfair Display', serif;
       font-size: 30px;
       margin-bottom: 14px;
+      line-height: 1.15;
     }
 
     .chapter-body p {
       font-size: 19px;
-      line-height: 1.7;
+      line-height: 1.75;
       color: var(--ink-soft);
+    }
+
+    .chapter-body p + p { margin-top: 14px; }
+
+    .pullquote {
+      border-left: 3px solid var(--accent);
+      padding: 4px 0 4px 20px;
+      margin: 30px 0 10px;
+      font-style: italic;
+      font-size: 22px;
+      color: var(--ink);
+      line-height: 1.5;
+    }
+
+    .pullquote .attr {
+      display: block;
+      margin-top: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-style: normal;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-faded);
     }
 
     .ornament {
@@ -284,6 +307,7 @@
       padding: 50px 0 30px;
       font-size: 22px;
       color: var(--ink-faded);
+      letter-spacing: 0.6em;
     }
 
     .colophon {
@@ -298,28 +322,9 @@
     }
 
     @media(max-width: 768px) {
-
-      .masthead {
-        grid-template-columns: 1fr;
-        text-align: center;
-      }
-
-      .masthead .right {
-        text-align: center;
-      }
-
-      .entry-head {
-        grid-template-columns: 1fr;
-      }
-
-      .portrait {
-        max-width: 220px;
-        margin: 0 auto;
-      }
-
-      .chapter {
-        grid-template-columns: 1fr;
-      }
+      .masthead { grid-template-columns: 1fr; text-align: center; }
+      .masthead .right { text-align: center; }
+      .chapter { grid-template-columns: 1fr; gap: 12px; }
     }
   </style>
 </head>
@@ -336,34 +341,25 @@
 
     <section class="header">
       <div class="kicker">— A Daily Record of Lives —</div>
-
       <h1>Born <em>Today</em></h1>
-
       <div class="date" id="prettyDate"></div>
-
       <p class="lede">
         Each day, the past returns a name. A life lived elsewhere in time, recovered briefly and read by you.
       </p>
     </section>
 
     <section class="controls">
-
       <div>
-        <label>Field</label>
-        <br>
+        <label>Field</label><br>
         <select id="category">
-          <option value="sports">Sport & Athletics</option>
-          <option value="arts">Arts & Letters</option>
-          <option value="politics">Politics & Statecraft</option>
-          <option value="science">Science & Discovery</option>
-          <option value="music">Music & Composition</option>
+          <option value="Sport &amp; Athletics">Sport &amp; Athletics</option>
+          <option value="Arts &amp; Letters">Arts &amp; Letters</option>
+          <option value="Politics &amp; Statecraft">Politics &amp; Statecraft</option>
+          <option value="Science &amp; Discovery">Science &amp; Discovery</option>
+          <option value="Music &amp; Composition">Music &amp; Composition</option>
         </select>
       </div>
-
-      <button id="btn">
-        Reveal Today's Legend
-      </button>
-
+      <button id="btn">Reveal Today's Legend</button>
     </section>
 
     <div class="loading" id="loading"></div>
@@ -371,28 +367,20 @@
     <article class="entry" id="entry">
 
       <div class="entry-head">
-
-        <div class="portrait">
-          <img id="image" src="" alt="">
-          <div class="caption" id="caption"></div>
-        </div>
-
         <div class="entry-title">
           <div class="index" id="indexLine"></div>
-
           <h2 id="name"></h2>
-
           <p class="descriptor" id="desc"></p>
+          <div class="lifespan" id="lifespan"></div>
         </div>
-
       </div>
 
       <div id="chapters"></div>
 
-      <div class="ornament">❦ ❦ ❦</div>
+      <div class="ornament">❦</div>
 
       <div class="colophon">
-        Set in Playfair Display & Crimson Pro · Drawn from the open record
+        Set in Playfair Display &amp; Crimson Pro · Composed by Claude from the open record
       </div>
 
     </article>
@@ -400,210 +388,351 @@
   </main>
 
   <script>
-
-    const btn = document.getElementById('btn');
-    const category = document.getElementById('category');
-    const loading = document.getElementById('loading');
-    const entry = document.getElementById('entry');
-
-    const image = document.getElementById('image');
-    const nameEl = document.getElementById('name');
-    const descEl = document.getElementById('desc');
-    const chapters = document.getElementById('chapters');
+    const btn       = document.getElementById('btn');
+    const category  = document.getElementById('category');
+    const loading   = document.getElementById('loading');
+    const entry     = document.getElementById('entry');
+    const nameEl    = document.getElementById('name');
+    const descEl    = document.getElementById('desc');
+    const chapters  = document.getElementById('chapters');
     const indexLine = document.getElementById('indexLine');
+    const lifespan  = document.getElementById('lifespan');
 
-    const CATEGORY_KEYWORDS = {
-      sports: ['athlete', 'football', 'cricketer', 'player', 'tennis', 'basketball'],
-      arts: ['actor', 'artist', 'writer', 'poet', 'director'],
-      politics: ['politician', 'president', 'prime minister'],
-      science: ['scientist', 'physicist', 'inventor', 'chemist'],
-      music: ['musician', 'singer', 'composer']
-    };
+    const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-    /* DATE */
+    const today = new Date();
+    const todayMonth = MONTHS[today.getMonth()];
+    const todayDay = today.getDate();
+    const todayYear = today.getFullYear();
 
-    (function () {
-
-      const d = new Date();
-
-      const months = [
-        'January','February','March','April','May','June',
-        'July','August','September','October','November','December'
-      ];
-
-      document.getElementById('prettyDate').textContent =
-        `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
-
-      document.getElementById('todayDate').textContent =
-        d.toLocaleDateString('en-US', {
-          weekday: 'long',
-          month: 'short',
-          day: 'numeric'
-        });
-
-    })();
+    document.getElementById('prettyDate').textContent =
+      `${todayMonth} ${todayDay}, ${todayYear}`;
+    document.getElementById('todayDate').textContent =
+      today.toLocaleDateString('en-US', { weekday:'long', month:'short', day:'numeric' });
 
     btn.addEventListener('click', generateStory);
 
+    function setLoading(msg) {
+      loading.innerText = msg || '';
+      loading.classList.toggle('active', !!msg);
+    }
+
+    function escapeHtml(s) {
+      return String(s || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
     async function generateStory() {
-
-      loading.innerText = 'Consulting the archive…';
-
+      btn.disabled = true;
+      setLoading('Searching the archive');
       entry.classList.remove('show');
+      resetEntry();
+
+      const field = category.value.replace(/&amp;/g, '&');
+      const seed = Math.floor(Math.random() * 1000);
+
+      const prompt = `You are the editor of "The Almanac," a literary daily record of historical lives. Today is ${todayMonth} ${todayDay}.
+
+Use web search to find a notable historical figure BORN on ${todayMonth} ${todayDay} (any year) whose field is "${field}". Prefer figures who are deceased or whose primary work is in the past — avoid currently-active celebrities under 40. Surprise the reader: do not always pick the single most obvious name. (Random nudge: ${seed} — use this to vary your choice across runs.)
+
+Do at most ONE or TWO web searches — just enough to confirm the person and pick up specific facts. Don't over-research; speed matters.
+
+Return ONLY a JSON object — no preamble, no markdown fences, no commentary before or after — in this exact shape:
+
+{
+  "name": "Full name",
+  "descriptor": "One italicized line that captures who they were — specific, not generic. E.g. 'The Bengali polymath who rewrote a nation's idea of itself' rather than 'A great writer'.",
+  "birth_year": 1861,
+  "death_year": 1941,
+  "chapters": [
+    {
+      "title": "Specific title anchored in this person's actual life (4-8 words). NOT 'Origins' or 'Early Life' — use something like 'A House on Jorasanko Street' or 'The Calcutta Years'.",
+      "body": "2-4 sentences with REAL specifics: places, names, dates, titles of works, particular events."
+    },
+    { "title": "...", "body": "..." },
+    { "title": "...", "body": "..." },
+    { "title": "...", "body": "..." },
+    { "title": "...", "body": "..." }
+  ],
+  "pullquote": {
+    "text": "A single striking sentence — either a real quote from the person, or a concrete factual observation about a specific moment in their life.",
+    "attribution": "Short context (e.g. 'From a 1912 letter' or 'On winning the Nobel')"
+  }
+}
+
+IMPORTANT: emit the JSON keys in the exact order shown above (name first, then descriptor, then birth_year, then death_year, then chapters, then pullquote). This matters for progressive rendering.
+
+The five chapters should walk chronologically through the life. Their TITLES must be specific to this person — anchored in real places, works, events, or relationships. Each body must contain concrete specifics drawn from the historical record: actual book titles, race names, opponent names, political offices held, particular dates. Do NOT write filler like "endured periods of uncertainty," "the work resonated beyond the individual," or "what survives is influence" — those are exactly the generic lines this almanac is trying to avoid.
+
+Return ONLY the JSON.`;
 
       try {
-
-        const today = new Date();
-
-        const month = today.getMonth() + 1;
-        const day = today.getDate();
-
-        const res = await fetch(
-          `https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/births/${month}/${day}`
-        );
-
-        if (!res.ok) {
-          throw new Error('Birth API failed');
-        }
-
-        const data = await res.json();
-
-        const births = Array.isArray(data.births)
-          ? data.births
-          : [];
-
-        const valid = births.filter(p =>
-          p &&
-          p.pages &&
-          p.pages.length &&
-          p.pages[0] &&
-          p.pages[0].normalizedtitle
-        );
-
-        if (!valid.length) {
-          throw new Error('No valid entries');
-        }
-
-        const keywords = CATEGORY_KEYWORDS[category.value] || [];
-
-        let pool = valid.filter(p => {
-
-          const desc = (
-            p.pages[0].description || ''
-          ).toLowerCase();
-
-          return keywords.some(k => desc.includes(k));
-
+        const apiRes = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "claude-sonnet-4-20250514",
+            max_tokens: 4000,
+            stream: true,
+            messages: [{ role: "user", content: prompt }],
+            tools: [
+              { type: "web_search_20250305", name: "web_search" }
+            ]
+          })
         });
 
-        if (!pool.length) {
-          pool = valid;
+        if (!apiRes.ok) {
+          const errText = await apiRes.text().catch(() => '');
+          throw new Error(`API ${apiRes.status}: ${errText.slice(0, 120)}`);
         }
 
-        const pick =
-          pool[Math.floor(Math.random() * pool.length)];
+        // Stream-parse the SSE response, accumulating text and rendering progressively.
+        const reader = apiRes.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let accumulatedText = '';
+        let entryShown = false;
+        let searchSeen = false;
+        let renderedState = { name: null, descriptor: null, lifespan: null, chapterCount: 0, hasPullquote: false };
 
-        const title = pick.pages[0].normalizedtitle;
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
 
-        const birthYear = pick.year;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
 
-        const wikiRes = await fetch(
-          `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`
-        );
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const payload = line.slice(6).trim();
+            if (!payload || payload === '[DONE]') continue;
 
-        if (!wikiRes.ok) {
-          throw new Error('Summary fetch failed');
+            let evt;
+            try { evt = JSON.parse(payload); } catch (_) { continue; }
+
+            // Surface tool-use phases so the user knows what's happening
+            if (evt.type === 'content_block_start' && evt.content_block) {
+              if (evt.content_block.type === 'server_tool_use' || evt.content_block.type === 'web_search_tool_result') {
+                if (!searchSeen) {
+                  setLoading('Cross-referencing the record');
+                  searchSeen = true;
+                }
+              } else if (evt.content_block.type === 'text') {
+                setLoading('Composing the entry');
+              }
+            }
+
+            if (evt.type === 'content_block_delta' && evt.delta && evt.delta.type === 'text_delta') {
+              accumulatedText += evt.delta.text;
+              const progress = parseProgressive(accumulatedText);
+              if (progress) {
+                if (!entryShown && progress.name) {
+                  entry.classList.add('show');
+                  entryShown = true;
+                }
+                applyProgressive(progress, renderedState);
+              }
+            }
+          }
         }
 
-        const person = await wikiRes.json();
+        // Final pass: parse the full JSON to make sure everything is rendered cleanly
+        const cleaned = accumulatedText.replace(/```json\s*|```\s*/g, '').trim();
+        const match = cleaned.match(/\{[\s\S]*\}/);
+        if (!match) throw new Error('No JSON found');
 
-        if (!person || !person.title) {
-          throw new Error('Invalid summary');
+        let parsed;
+        try { parsed = JSON.parse(match[0]); }
+        catch (_) { throw new Error('Malformed JSON'); }
+
+        if (!parsed.name || !Array.isArray(parsed.chapters) || !parsed.chapters.length) {
+          throw new Error('Incomplete entry');
         }
 
-        person._birthYear = birthYear;
-
-        render(person);
+        render(parsed);
+        entry.classList.add('show');
+        setLoading('');
 
       } catch (err) {
-
         console.error(err);
-
-        loading.innerText =
-          'Could not retrieve a complete archive entry. Try again.';
+        const msg = (err && err.message) ? err.message : 'unknown error';
+        setLoading(`Could not retrieve an entry (${msg}). Try again.`);
+      } finally {
+        btn.disabled = false;
       }
     }
 
-    function render(person) {
-
-      loading.innerText = '';
-
-      entry.classList.add('show');
-
-      const name = person.title || 'Unknown';
-
-      nameEl.innerText = name;
-
-      descEl.innerText =
-        person.description || 'A life of consequence';
-
-      image.src =
-        (person.thumbnail && person.thumbnail.source)
-          ? person.thumbnail.source
-          : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
-
-      image.alt = name;
-
-      const yr = person._birthYear;
-
-      document.getElementById('caption').innerText =
-        yr ? `Portrait · b. ${yr}` : 'Portrait';
-
-      indexLine.innerText =
-        `Entry № ${Math.floor(Math.random() * 900 + 100)} · Born ${yr}`;
-
-      const summary =
-        person.extract ||
-        'The archive preserves only fragments.';
-
-      const sections = [
-
-        ['I', 'The Record', summary],
-
-        ['II', 'The Lowest Point',
-          `${name} endured periods of uncertainty, obscurity, rejection, and personal difficulty before the world knew the name.`],
-
-        ['III', 'The Persistence',
-          `Long before recognition, ${name} continued through repetition, discipline, and years where progress was invisible.`],
-
-        ['IV', 'The Highest Point',
-          `Eventually, the work resonated beyond the individual. Recognition transformed the name into something larger than a single life.`],
-
-        ['V', 'The Legacy',
-          `What survives is not merely accomplishment, but influence — the people inspired by ${name} to attempt greatness themselves.`]
-
-      ];
-
-      chapters.innerHTML = sections.map(([num, title, text]) => `
-
-        <div class="chapter">
-
-          <div class="chapter-marker">
-            <span class="num">${num}</span>
-            Chapter
-          </div>
-
-          <div class="chapter-body">
-            <h3>${title}</h3>
-            <p>${text}</p>
-          </div>
-
-        </div>
-
-      `).join('');
-
+    function resetEntry() {
+      nameEl.innerText = '';
+      descEl.innerText = '';
+      lifespan.innerHTML = '';
+      indexLine.innerText = '';
+      chapters.innerHTML = '';
     }
 
+    // Extract whatever JSON fields are completable from an in-progress stream.
+    // We use forgiving regex matches against the streaming text, not JSON.parse,
+    // because the buffer is incomplete by definition mid-stream.
+    function parseProgressive(text) {
+      const out = {};
+
+      // name: the first complete "name": "..." pair
+      const nameMatch = text.match(/"name"\s*:\s*"((?:\\.|[^"\\])*)"/);
+      if (nameMatch) out.name = unescapeJson(nameMatch[1]);
+
+      const descMatch = text.match(/"descriptor"\s*:\s*"((?:\\.|[^"\\])*)"/);
+      if (descMatch) out.descriptor = unescapeJson(descMatch[1]);
+
+      const byMatch = text.match(/"birth_year"\s*:\s*(\d{1,4})/);
+      if (byMatch) out.birth_year = parseInt(byMatch[1], 10);
+
+      const dyMatch = text.match(/"death_year"\s*:\s*(\d{1,4})/);
+      if (dyMatch) out.death_year = parseInt(dyMatch[1], 10);
+
+      // chapters: find every complete {title, body} pair so far
+      out.chapters = [];
+      const chapterRegex = /\{\s*"title"\s*:\s*"((?:\\.|[^"\\])*)"\s*,\s*"body"\s*:\s*"((?:\\.|[^"\\])*)"\s*\}/g;
+      let m;
+      while ((m = chapterRegex.exec(text)) !== null) {
+        out.chapters.push({
+          title: unescapeJson(m[1]),
+          body: unescapeJson(m[2])
+        });
+      }
+
+      // pullquote (complete only)
+      const pullMatch = text.match(/"pullquote"\s*:\s*\{\s*"text"\s*:\s*"((?:\\.|[^"\\])*)"\s*,\s*"attribution"\s*:\s*"((?:\\.|[^"\\])*)"\s*\}/);
+      if (pullMatch) {
+        out.pullquote = { text: unescapeJson(pullMatch[1]), attribution: unescapeJson(pullMatch[2]) };
+      }
+
+      return out;
+    }
+
+    function unescapeJson(s) {
+      return s
+        .replace(/\\n/g, '\n')
+        .replace(/\\"/g, '"')
+        .replace(/\\\\/g, '\\')
+        .replace(/\\t/g, '  ');
+    }
+
+    function applyProgressive(progress, state) {
+      // Name + descriptor + lifespan: render once they appear, update if they change
+      if (progress.name && progress.name !== state.name) {
+        nameEl.innerText = progress.name;
+        indexLine.innerText = `Entry № ${(state.entryNum = state.entryNum || Math.floor(Math.random() * 900 + 100))} · ${todayMonth} ${todayDay}${progress.birth_year ? ', ' + progress.birth_year : ''}`;
+        state.name = progress.name;
+      }
+      if (progress.descriptor && progress.descriptor !== state.descriptor) {
+        descEl.innerText = progress.descriptor;
+        state.descriptor = progress.descriptor;
+      }
+
+      const lifeKey = `${progress.birth_year}-${progress.death_year}`;
+      if (lifeKey !== state.lifespan && progress.birth_year) {
+        const by = progress.birth_year, dy = progress.death_year;
+        if (by && dy) {
+          lifespan.innerHTML = `b. <span>${by}</span> &nbsp;·&nbsp; d. <span>${dy}</span> &nbsp;·&nbsp; <span>${dy - by}</span> years`;
+        } else if (by) {
+          lifespan.innerHTML = `b. <span>${by}</span>`;
+        }
+        state.lifespan = lifeKey;
+      }
+
+      // Append any chapters that just became complete
+      const roman = ['I','II','III','IV','V','VI','VII'];
+      while (state.chapterCount < progress.chapters.length && state.chapterCount < 5) {
+        const i = state.chapterCount;
+        const c = progress.chapters[i];
+        const block = document.createElement('div');
+        block.className = 'chapter';
+        block.style.opacity = '0';
+        block.innerHTML = `
+          <div class="chapter-marker">
+            <span class="num">${roman[i]}</span>
+            Chapter
+          </div>
+          <div class="chapter-body">
+            <h3>${escapeHtml(c.title)}</h3>
+            <p>${escapeHtml(c.body)}</p>
+          </div>`;
+        chapters.appendChild(block);
+        // fade in next tick
+        requestAnimationFrame(() => {
+          block.style.transition = 'opacity 0.4s ease';
+          block.style.opacity = '1';
+        });
+        state.chapterCount++;
+      }
+
+      // Insert pullquote after the third chapter once it's complete
+      if (progress.pullquote && !state.hasPullquote && state.chapterCount >= 3) {
+        const pq = document.createElement('div');
+        pq.className = 'pullquote';
+        pq.style.opacity = '0';
+        pq.innerHTML = `${escapeHtml(progress.pullquote.text)}<span class="attr">${escapeHtml(progress.pullquote.attribution || 'On the record')}</span>`;
+        // attach to the third chapter's body
+        const thirdChapter = chapters.children[2];
+        if (thirdChapter) {
+          const body = thirdChapter.querySelector('.chapter-body');
+          if (body) body.appendChild(pq);
+          requestAnimationFrame(() => {
+            pq.style.transition = 'opacity 0.4s ease';
+            pq.style.opacity = '1';
+          });
+        }
+        state.hasPullquote = true;
+      }
+    }
+
+    function render(data) {
+      // Final reconciliation after the stream finishes. Only fill in anything
+      // the progressive renderer missed; do not destroy what's already there.
+      if (data.name && nameEl.innerText !== data.name) nameEl.innerText = data.name;
+      if (data.descriptor && descEl.innerText !== data.descriptor) descEl.innerText = data.descriptor;
+
+      const by = data.birth_year, dy = data.death_year;
+      if (by && dy && !lifespan.innerHTML.includes(`${dy}`)) {
+        lifespan.innerHTML = `b. <span>${by}</span> &nbsp;·&nbsp; d. <span>${dy}</span> &nbsp;·&nbsp; <span>${dy - by}</span> years`;
+      }
+
+      // If somehow the stream didn't yield 5 chapters but the final JSON has them, append the rest.
+      const roman = ['I','II','III','IV','V','VI','VII'];
+      const existing = chapters.children.length;
+      for (let i = existing; i < Math.min(5, data.chapters.length); i++) {
+        const c = data.chapters[i];
+        const block = document.createElement('div');
+        block.className = 'chapter';
+        block.innerHTML = `
+          <div class="chapter-marker">
+            <span class="num">${roman[i]}</span>
+            Chapter
+          </div>
+          <div class="chapter-body">
+            <h3>${escapeHtml(c.title)}</h3>
+            <p>${escapeHtml(c.body)}</p>
+          </div>`;
+        chapters.appendChild(block);
+      }
+
+      // Pullquote fallback
+      if (data.pullquote && data.pullquote.text && !chapters.querySelector('.pullquote')) {
+        const thirdChapter = chapters.children[2];
+        if (thirdChapter) {
+          const body = thirdChapter.querySelector('.chapter-body');
+          if (body) {
+            const pq = document.createElement('div');
+            pq.className = 'pullquote';
+            pq.innerHTML = `${escapeHtml(data.pullquote.text)}<span class="attr">${escapeHtml(data.pullquote.attribution || 'On the record')}</span>`;
+            body.appendChild(pq);
+          }
+        }
+      }
+    }
   </script>
 
 </body>
