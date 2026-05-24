@@ -433,63 +433,22 @@
       const field = category.value.replace(/&amp;/g, '&');
       const seed = Math.floor(Math.random() * 10000);
 
-      const prompt = `You are the editor of "The Almanac," a literary daily record of historical lives. Today is ${todayMonth} ${todayDay}.
-
-Choose a notable historical figure BORN on ${todayMonth} ${todayDay} (any year) whose field is "${field}". They must be well-known enough that you have confident, accurate biographical knowledge of them — prefer figures who are deceased or whose primary work is firmly in the past. Surprise the reader: do not always pick the most obvious name from the date. Random seed: ${seed} — use this to vary your choice.
-
-CRITICAL ACCURACY RULE: only include specifics (dates, place names, titles of works, names of collaborators or opponents, awards) that you are confident are correct. If you are uncertain about a detail, omit it or describe it more generally — do not invent. But do NOT fall back to generic platitudes like "endured uncertainty" or "the work resonated" — instead, name the things you DO know for certain about this person.
-
-Return ONLY a JSON object — no preamble, no markdown fences, no commentary — in this exact shape:
-
-{
-  "name": "Full name",
-  "descriptor": "One line capturing who they were — specific, not generic. E.g. 'The Bengali polymath who rewrote a nation's idea of itself' rather than 'A great writer'.",
-  "birth_year": 1861,
-  "death_year": 1941,
-  "chapters": [
-    {
-      "title": "Specific title anchored in this person's actual life (4-8 words). NOT 'Origins' or 'Early Life' — use something like 'A House on Jorasanko Street'.",
-      "body": "2-4 sentences with real specifics drawn from what you know with confidence: places, names, dates, works, particular events."
-    },
-    { "title": "...", "body": "..." },
-    { "title": "...", "body": "..." },
-    { "title": "...", "body": "..." },
-    { "title": "...", "body": "..." }
-  ],
-  "pullquote": {
-    "text": "A single striking sentence — a real quote (only if you're confident of the wording) or a concrete factual observation.",
-    "attribution": "Short context (e.g. 'From a 1912 letter' or 'On winning the Nobel')"
-  }
-}
-
-The five chapters should walk chronologically through the life. Their TITLES must be specific to this person — anchored in real places, works, events, or relationships. Each body must contain concrete specifics. Avoid generic filler.
-
-Return ONLY the JSON.`;
-
       try {
-        const apiRes = await fetch("https://api.anthropic.com/v1/messages", {
+        const apiRes = await fetch("/api/almanac", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            model: "claude-sonnet-4-20250514",
-            max_tokens: 2000,
-            messages: [{ role: "user", content: prompt }]
-          })
+          body: JSON.stringify({ field, month: todayMonth, day: todayDay, seed })
         });
 
         if (!apiRes.ok) {
-          const errText = await apiRes.text().catch(() => '');
-          throw new Error(`API ${apiRes.status}: ${errText.slice(0, 120)}`);
+          const errBody = await apiRes.json().catch(() => ({}));
+          throw new Error(errBody.error || `Proxy ${apiRes.status}`);
         }
 
         setLoading('Composing the entry');
 
         const apiData = await apiRes.json();
-        const fullText = (apiData.content || [])
-          .filter(b => b.type === 'text')
-          .map(b => b.text)
-          .join('\n')
-          .trim();
+        const fullText = (apiData.text || '').trim();
 
         if (!fullText) throw new Error('Empty response');
 
