@@ -426,30 +426,30 @@
 
     async function generateStory() {
       btn.disabled = true;
-      setLoading('Searching the archive');
+      setLoading('Consulting the archive');
       entry.classList.remove('show');
       resetEntry();
 
       const field = category.value.replace(/&amp;/g, '&');
-      const seed = Math.floor(Math.random() * 1000);
+      const seed = Math.floor(Math.random() * 10000);
 
       const prompt = `You are the editor of "The Almanac," a literary daily record of historical lives. Today is ${todayMonth} ${todayDay}.
 
-Use web search to find a notable historical figure BORN on ${todayMonth} ${todayDay} (any year) whose field is "${field}". Prefer figures who are deceased or whose primary work is in the past — avoid currently-active celebrities under 40. Surprise the reader: do not always pick the single most obvious name. (Random nudge: ${seed} — use this to vary your choice across runs.)
+Choose a notable historical figure BORN on ${todayMonth} ${todayDay} (any year) whose field is "${field}". They must be well-known enough that you have confident, accurate biographical knowledge of them — prefer figures who are deceased or whose primary work is firmly in the past. Surprise the reader: do not always pick the most obvious name from the date. Random seed: ${seed} — use this to vary your choice.
 
-Do at most ONE or TWO web searches — just enough to confirm the person and pick up specific facts. Don't over-research; speed matters.
+CRITICAL ACCURACY RULE: only include specifics (dates, place names, titles of works, names of collaborators or opponents, awards) that you are confident are correct. If you are uncertain about a detail, omit it or describe it more generally — do not invent. But do NOT fall back to generic platitudes like "endured uncertainty" or "the work resonated" — instead, name the things you DO know for certain about this person.
 
-Return ONLY a JSON object — no preamble, no markdown fences, no commentary before or after — in this exact shape:
+Return ONLY a JSON object — no preamble, no markdown fences, no commentary — in this exact shape:
 
 {
   "name": "Full name",
-  "descriptor": "One italicized line that captures who they were — specific, not generic. E.g. 'The Bengali polymath who rewrote a nation's idea of itself' rather than 'A great writer'.",
+  "descriptor": "One line capturing who they were — specific, not generic. E.g. 'The Bengali polymath who rewrote a nation's idea of itself' rather than 'A great writer'.",
   "birth_year": 1861,
   "death_year": 1941,
   "chapters": [
     {
-      "title": "Specific title anchored in this person's actual life (4-8 words). NOT 'Origins' or 'Early Life' — use something like 'A House on Jorasanko Street' or 'The Calcutta Years'.",
-      "body": "2-4 sentences with REAL specifics: places, names, dates, titles of works, particular events."
+      "title": "Specific title anchored in this person's actual life (4-8 words). NOT 'Origins' or 'Early Life' — use something like 'A House on Jorasanko Street'.",
+      "body": "2-4 sentences with real specifics drawn from what you know with confidence: places, names, dates, works, particular events."
     },
     { "title": "...", "body": "..." },
     { "title": "...", "body": "..." },
@@ -457,14 +457,12 @@ Return ONLY a JSON object — no preamble, no markdown fences, no commentary bef
     { "title": "...", "body": "..." }
   ],
   "pullquote": {
-    "text": "A single striking sentence — either a real quote from the person, or a concrete factual observation about a specific moment in their life.",
+    "text": "A single striking sentence — a real quote (only if you're confident of the wording) or a concrete factual observation.",
     "attribution": "Short context (e.g. 'From a 1912 letter' or 'On winning the Nobel')"
   }
 }
 
-IMPORTANT: emit the JSON keys in the exact order shown above (name first, then descriptor, then birth_year, then death_year, then chapters, then pullquote). This matters for progressive rendering.
-
-The five chapters should walk chronologically through the life. Their TITLES must be specific to this person — anchored in real places, works, events, or relationships. Each body must contain concrete specifics drawn from the historical record: actual book titles, race names, opponent names, political offices held, particular dates. Do NOT write filler like "endured periods of uncertainty," "the work resonated beyond the individual," or "what survives is influence" — those are exactly the generic lines this almanac is trying to avoid.
+The five chapters should walk chronologically through the life. Their TITLES must be specific to this person — anchored in real places, works, events, or relationships. Each body must contain concrete specifics. Avoid generic filler.
 
 Return ONLY the JSON.`;
 
@@ -474,12 +472,8 @@ Return ONLY the JSON.`;
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             model: "claude-sonnet-4-20250514",
-            max_tokens: 4000,
-            stream: true,
-            messages: [{ role: "user", content: prompt }],
-            tools: [
-              { type: "web_search_20250305", name: "web_search" }
-            ]
+            max_tokens: 2000,
+            messages: [{ role: "user", content: prompt }]
           })
         });
 
@@ -488,59 +482,18 @@ Return ONLY the JSON.`;
           throw new Error(`API ${apiRes.status}: ${errText.slice(0, 120)}`);
         }
 
-        // Stream-parse the SSE response, accumulating text and rendering progressively.
-        const reader = apiRes.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = '';
-        let accumulatedText = '';
-        let entryShown = false;
-        let searchSeen = false;
-        let renderedState = { name: null, descriptor: null, lifespan: null, chapterCount: 0, hasPullquote: false };
+        setLoading('Composing the entry');
 
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
+        const apiData = await apiRes.json();
+        const fullText = (apiData.content || [])
+          .filter(b => b.type === 'text')
+          .map(b => b.text)
+          .join('\n')
+          .trim();
 
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split('\n');
-          buffer = lines.pop() || '';
+        if (!fullText) throw new Error('Empty response');
 
-          for (const line of lines) {
-            if (!line.startsWith('data: ')) continue;
-            const payload = line.slice(6).trim();
-            if (!payload || payload === '[DONE]') continue;
-
-            let evt;
-            try { evt = JSON.parse(payload); } catch (_) { continue; }
-
-            // Surface tool-use phases so the user knows what's happening
-            if (evt.type === 'content_block_start' && evt.content_block) {
-              if (evt.content_block.type === 'server_tool_use' || evt.content_block.type === 'web_search_tool_result') {
-                if (!searchSeen) {
-                  setLoading('Cross-referencing the record');
-                  searchSeen = true;
-                }
-              } else if (evt.content_block.type === 'text') {
-                setLoading('Composing the entry');
-              }
-            }
-
-            if (evt.type === 'content_block_delta' && evt.delta && evt.delta.type === 'text_delta') {
-              accumulatedText += evt.delta.text;
-              const progress = parseProgressive(accumulatedText);
-              if (progress) {
-                if (!entryShown && progress.name) {
-                  entry.classList.add('show');
-                  entryShown = true;
-                }
-                applyProgressive(progress, renderedState);
-              }
-            }
-          }
-        }
-
-        // Final pass: parse the full JSON to make sure everything is rendered cleanly
-        const cleaned = accumulatedText.replace(/```json\s*|```\s*/g, '').trim();
+        const cleaned = fullText.replace(/```json\s*|```\s*/g, '').trim();
         const match = cleaned.match(/\{[\s\S]*\}/);
         if (!match) throw new Error('No JSON found');
 
@@ -573,141 +526,27 @@ Return ONLY the JSON.`;
       chapters.innerHTML = '';
     }
 
-    // Extract whatever JSON fields are completable from an in-progress stream.
-    // We use forgiving regex matches against the streaming text, not JSON.parse,
-    // because the buffer is incomplete by definition mid-stream.
-    function parseProgressive(text) {
-      const out = {};
-
-      // name: the first complete "name": "..." pair
-      const nameMatch = text.match(/"name"\s*:\s*"((?:\\.|[^"\\])*)"/);
-      if (nameMatch) out.name = unescapeJson(nameMatch[1]);
-
-      const descMatch = text.match(/"descriptor"\s*:\s*"((?:\\.|[^"\\])*)"/);
-      if (descMatch) out.descriptor = unescapeJson(descMatch[1]);
-
-      const byMatch = text.match(/"birth_year"\s*:\s*(\d{1,4})/);
-      if (byMatch) out.birth_year = parseInt(byMatch[1], 10);
-
-      const dyMatch = text.match(/"death_year"\s*:\s*(\d{1,4})/);
-      if (dyMatch) out.death_year = parseInt(dyMatch[1], 10);
-
-      // chapters: find every complete {title, body} pair so far
-      out.chapters = [];
-      const chapterRegex = /\{\s*"title"\s*:\s*"((?:\\.|[^"\\])*)"\s*,\s*"body"\s*:\s*"((?:\\.|[^"\\])*)"\s*\}/g;
-      let m;
-      while ((m = chapterRegex.exec(text)) !== null) {
-        out.chapters.push({
-          title: unescapeJson(m[1]),
-          body: unescapeJson(m[2])
-        });
-      }
-
-      // pullquote (complete only)
-      const pullMatch = text.match(/"pullquote"\s*:\s*\{\s*"text"\s*:\s*"((?:\\.|[^"\\])*)"\s*,\s*"attribution"\s*:\s*"((?:\\.|[^"\\])*)"\s*\}/);
-      if (pullMatch) {
-        out.pullquote = { text: unescapeJson(pullMatch[1]), attribution: unescapeJson(pullMatch[2]) };
-      }
-
-      return out;
-    }
-
-    function unescapeJson(s) {
-      return s
-        .replace(/\\n/g, '\n')
-        .replace(/\\"/g, '"')
-        .replace(/\\\\/g, '\\')
-        .replace(/\\t/g, '  ');
-    }
-
-    function applyProgressive(progress, state) {
-      // Name + descriptor + lifespan: render once they appear, update if they change
-      if (progress.name && progress.name !== state.name) {
-        nameEl.innerText = progress.name;
-        indexLine.innerText = `Entry № ${(state.entryNum = state.entryNum || Math.floor(Math.random() * 900 + 100))} · ${todayMonth} ${todayDay}${progress.birth_year ? ', ' + progress.birth_year : ''}`;
-        state.name = progress.name;
-      }
-      if (progress.descriptor && progress.descriptor !== state.descriptor) {
-        descEl.innerText = progress.descriptor;
-        state.descriptor = progress.descriptor;
-      }
-
-      const lifeKey = `${progress.birth_year}-${progress.death_year}`;
-      if (lifeKey !== state.lifespan && progress.birth_year) {
-        const by = progress.birth_year, dy = progress.death_year;
-        if (by && dy) {
-          lifespan.innerHTML = `b. <span>${by}</span> &nbsp;·&nbsp; d. <span>${dy}</span> &nbsp;·&nbsp; <span>${dy - by}</span> years`;
-        } else if (by) {
-          lifespan.innerHTML = `b. <span>${by}</span>`;
-        }
-        state.lifespan = lifeKey;
-      }
-
-      // Append any chapters that just became complete
-      const roman = ['I','II','III','IV','V','VI','VII'];
-      while (state.chapterCount < progress.chapters.length && state.chapterCount < 5) {
-        const i = state.chapterCount;
-        const c = progress.chapters[i];
-        const block = document.createElement('div');
-        block.className = 'chapter';
-        block.style.opacity = '0';
-        block.innerHTML = `
-          <div class="chapter-marker">
-            <span class="num">${roman[i]}</span>
-            Chapter
-          </div>
-          <div class="chapter-body">
-            <h3>${escapeHtml(c.title)}</h3>
-            <p>${escapeHtml(c.body)}</p>
-          </div>`;
-        chapters.appendChild(block);
-        // fade in next tick
-        requestAnimationFrame(() => {
-          block.style.transition = 'opacity 0.4s ease';
-          block.style.opacity = '1';
-        });
-        state.chapterCount++;
-      }
-
-      // Insert pullquote after the third chapter once it's complete
-      if (progress.pullquote && !state.hasPullquote && state.chapterCount >= 3) {
-        const pq = document.createElement('div');
-        pq.className = 'pullquote';
-        pq.style.opacity = '0';
-        pq.innerHTML = `${escapeHtml(progress.pullquote.text)}<span class="attr">${escapeHtml(progress.pullquote.attribution || 'On the record')}</span>`;
-        // attach to the third chapter's body
-        const thirdChapter = chapters.children[2];
-        if (thirdChapter) {
-          const body = thirdChapter.querySelector('.chapter-body');
-          if (body) body.appendChild(pq);
-          requestAnimationFrame(() => {
-            pq.style.transition = 'opacity 0.4s ease';
-            pq.style.opacity = '1';
-          });
-        }
-        state.hasPullquote = true;
-      }
-    }
-
     function render(data) {
-      // Final reconciliation after the stream finishes. Only fill in anything
-      // the progressive renderer missed; do not destroy what's already there.
-      if (data.name && nameEl.innerText !== data.name) nameEl.innerText = data.name;
-      if (data.descriptor && descEl.innerText !== data.descriptor) descEl.innerText = data.descriptor;
+      nameEl.innerText = data.name;
+      descEl.innerText = data.descriptor || '';
 
       const by = data.birth_year, dy = data.death_year;
-      if (by && dy && !lifespan.innerHTML.includes(`${dy}`)) {
+      indexLine.innerText = `Entry № ${Math.floor(Math.random() * 900 + 100)} · ${todayMonth} ${todayDay}${by ? ', ' + by : ''}`;
+
+      if (by && dy) {
         lifespan.innerHTML = `b. <span>${by}</span> &nbsp;·&nbsp; d. <span>${dy}</span> &nbsp;·&nbsp; <span>${dy - by}</span> years`;
+      } else if (by) {
+        lifespan.innerHTML = `b. <span>${by}</span>`;
+      } else {
+        lifespan.innerHTML = '';
       }
 
-      // If somehow the stream didn't yield 5 chapters but the final JSON has them, append the rest.
       const roman = ['I','II','III','IV','V','VI','VII'];
-      const existing = chapters.children.length;
-      for (let i = existing; i < Math.min(5, data.chapters.length); i++) {
-        const c = data.chapters[i];
-        const block = document.createElement('div');
-        block.className = 'chapter';
-        block.innerHTML = `
+      const chs = data.chapters.slice(0, 5);
+      const pullIndex = Math.min(2, chs.length - 1);
+
+      chapters.innerHTML = chs.map((c, i) => `
+        <div class="chapter">
           <div class="chapter-marker">
             <span class="num">${roman[i]}</span>
             Chapter
@@ -715,23 +554,14 @@ Return ONLY the JSON.`;
           <div class="chapter-body">
             <h3>${escapeHtml(c.title)}</h3>
             <p>${escapeHtml(c.body)}</p>
-          </div>`;
-        chapters.appendChild(block);
-      }
-
-      // Pullquote fallback
-      if (data.pullquote && data.pullquote.text && !chapters.querySelector('.pullquote')) {
-        const thirdChapter = chapters.children[2];
-        if (thirdChapter) {
-          const body = thirdChapter.querySelector('.chapter-body');
-          if (body) {
-            const pq = document.createElement('div');
-            pq.className = 'pullquote';
-            pq.innerHTML = `${escapeHtml(data.pullquote.text)}<span class="attr">${escapeHtml(data.pullquote.attribution || 'On the record')}</span>`;
-            body.appendChild(pq);
-          }
-        }
-      }
+            ${
+              i === pullIndex && data.pullquote && data.pullquote.text
+                ? `<div class="pullquote">${escapeHtml(data.pullquote.text)}<span class="attr">${escapeHtml(data.pullquote.attribution || 'On the record')}</span></div>`
+                : ''
+            }
+          </div>
+        </div>
+      `).join('');
     }
   </script>
 
